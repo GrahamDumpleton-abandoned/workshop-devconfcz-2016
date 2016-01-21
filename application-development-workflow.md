@@ -1,6 +1,6 @@
 # Application development workflow
 
-These notes cover a typical developer workflow for working on a Python web application being deployed to OpenShift.
+These notes talk about the developer workflow for working on a Python web application being deployed to OpenShift.
 
 ## Local development environment
 
@@ -23,7 +23,7 @@ Being the Django development server, application reloading will automatically oc
 
 ## Publishing your code changes
 
-When your Python web application was deployed to OpenShift, it was given the Git repository URL. For any change to make it into your web application, they would by default need to be be commited into your local Git repository and then pushed back up to the remote Git repository. A rebuild and redeployment of your web application on OpenShift would then need to be triggered.
+When your Python web application was deployed to OpenShift, it was given the Git repository URL. For any change to make it into your web application, they would by default need to be commited into your local Git repository and then pushed back up to the remote Git repository. A rebuild and redeployment of your web application on OpenShift would then need to be triggered.
 
 The name of our web application within OpenShift was ``django-hello-world-v1``. Once a change has been pushed back to the remote repository, the rebuild and redeployment can therefore be triggered using:
 
@@ -65,7 +65,7 @@ This will throw you into an editor. Change the ``uri`` for the Git repository to
     type: Git
 ```
 
-When the change is made in this way, a new build and deployment will be automatically triggered the first time. After subsequent code changes you can then use ``oc start-build``.
+When a change is made to the build configuration in this way, a new build and deployment will be automatically triggered. After subsequent code changes you can then use ``oc start-build``.
 
 ## Automated code deployments
 
@@ -98,13 +98,17 @@ django-hello-world-v1-2 	complete 	43s 		2016-01-21 14:06:54 +1100 AEDT
 django-hello-world-v1-1 	complete 	56s 		2016-01-21 14:02:02 +1100 AEDT
 ```
 
+Once configured, any push of changes to your remote Git repository will automatically result in your web application being rebuilt and redeployed.
+
 ## Bypassing the remote Git repository
 
 If your local development environment isn't a valid equivalent of the OpenShift environment where your Python web application is being deployed, it may not always be possible to exactly replicate and test an issue in your local development environment.
 
 This means that you may have to commit and push up changes to your remote Git repository and rebuild and redeploy your web application to properly see the results of a change.
 
-This requirement to commit and push changes in this sort of scenario can quickly become cumbersome and can result in a messy commit history. If the instance of your application in OpenShift is specifically for development and testing, there are ways of bypassing the remote Git repository and so get a faster turn around on changes without leaving a trail of commits in your Git repository.
+This requirement to commit and push changes in this sort of scenario can quickly become cumbersome and can result in a messy commit history.
+
+If the instance of your application in OpenShift is specifically for development and testing, there are ways of bypassing the remote Git repository and so get a faster turn around on changes without leaving a trail of commits in your Git repository.
 
 The first such way to achieve this is to indicate to OpenShift when triggering a build, to use the source files for your application from a local directory on your own system, rather than from the Git repository.
 
@@ -117,9 +121,9 @@ Uploading directory "." as binary input for the build ...
 django-hello-world-v1-3
 ```
 
-What ``oc start-build`` does here is package up the local source directory and sends it up to OpenShift. That will be used instead of the contents of the Git repository. It will use whatever files are in the directory, including files containing changes that have not been commited into the Git repository.
+What ``oc start-build`` does when supplied ``--from-dir`` is package up the local source directory and send it up to OpenShift. That will be used instead of the contents of the Git repository. It will use whatever files are in the directory, including files containing changes that have not been commited into the Git repository.
 
-Note that the use of the local directory will only apply to that one build. To have it revert back to what is in the remote Git repository, trigger a new build without the ``--from-dir`` option:
+Note that the use of the local directory will only apply to that one build. To rebuild with it reverting back to what is in the remote Git repository, trigger a new build without the ``--from-dir`` option:
 
 ```
 $ oc start-build django-hello-world-v1
@@ -164,7 +168,7 @@ Although it seems to be a favourite of PaaS offerings to automatically use the D
 
 Also be aware that live source code changes will only work where some other action doesn't need to be taken, such as installing additional Python packages. Depending on the Docker base image being used and the application itself, you may or may not be able to install additional packages manually in the running Docker container.
 
-Finally, making live source code changes only make sense where you have an single instance of your web application running. This is because the application code is local to each Docker container. Where multiple instances are running, subsequent requests may not be handled by the Docker container where you made the live code changes.
+Finally, making live source code changes only make sense where you have a single instance of your web application running. This is because the application code is local to each Docker container. Where multiple instances are running, subsequent requests may not be handled by the Docker container where you made the live code changes.
 
 ## Sycnhronising files with a pod
 
@@ -191,6 +195,8 @@ total size is 9476  speedup is 0.91
 
 Your mileage on this may vary as although it will synchronise files across, the ``rsync`` command does appear to give strange errors at times depending on what directories you are syncing and the permissions on those directories.
 
-Either way, because the Django development server was being used, your Python web application will be internally restarted when the changed code files are detected.
+Either way, because the Django development server was being used, your Python web application will again be internally restarted when the changed code files are detected.
 
 Files can also be copied back out of a running Docker container using ``oc rsync`` if you had instead use ``oc rsh`` to enter into the Docker container to make changes and wish to save those changes.
+
+Do remember that a running Docker container is ephemeral and the application code is not stored on a persistent disk volume. If making changes in the running Docker container itself and the container were shutdown and restarted, you will loose your changes.

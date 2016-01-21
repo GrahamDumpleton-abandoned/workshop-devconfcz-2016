@@ -68,16 +68,16 @@ Insecure Policy:	<none>
 
 ## Python language detection
 
-When using ``oc new-app`` against the Git repository we did not specify that it was in fact a Phython web application. The ``oc new-app`` command will work out what programming language the web application is implemented in by looking at what files are contained in the Git repository.
+When using ``oc new-app`` against the Git repository we did not specify that it was in fact a Python web application. The ``oc new-app`` command will work out what programming language the web application is implemented in by looking at what files are contained in the Git repository.
 
 For Python web applications, ``oc new-app`` will look for the presence of the following files:
 
 * ``requirements.txt`` - List of Python packages which would be installed using the ``pip`` command.
 * ``setup.py`` - A Python setup file for installing an application as a Python package. (OSE 1.1.1 or later only)
 
-If either file exists it will assume that the Git repository contains a Python wbe application and select the Python S2I builder to create a Docker image for the web application and deploy it.
+If either file exists it will assume that the Git repository contains a Python web application and select the Python S2I builder to create a Docker image for the web application and deploy it.
 
-OpenShift current supports S2I builders for the following Python versions:
+OpenShift currently provides S2I builders for the following Python versions:
 
 * Python 2.7
 * Python 3.3
