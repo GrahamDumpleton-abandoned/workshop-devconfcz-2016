@@ -20,25 +20,25 @@ We will be using the S2I method for handling deploying of a Python web applicati
 
 For our initial example we are going to use a simple Django 'Hello World' application. The Git repository for this can be found at:
 
-* [https://github.com/GrahamDumpleton/django-hello-world-1](https://github.com/GrahamDumpleton/django-hello-world-1)
+* [https://github.com/GrahamDumpleton/django-hello-world-v1](https://github.com/GrahamDumpleton/django-hello-world-v1)
 
 To deploy this Django web application to OpenShift we use the ``oc new-app`` command:
 
 ```
-$ oc new-app https://github.com/GrahamDumpleton/django-hello-world-1.git
+$ oc new-app https://github.com/GrahamDumpleton/django-hello-world-v1.git
 --> Found image bae1743 (6 weeks old) in image stream "python in project openshift" under tag :latest for "python"
     * The source repository appears to match: python
-    * A source build using source code from https://github.com/GrahamDumpleton/django-hello-world-1.git will be created
-      * The resulting image will be pushed to image stream "django-hello-world-1:latest"
-    * This image will be deployed in deployment config "django-hello-world-1"
-    * Port 8080/tcp will be load balanced by service "django-hello-world-1"
---> Creating resources with label app=django-hello-world-1 ...
-    ImageStream "django-hello-world-1" created
-    BuildConfig "django-hello-world-1" created
-    DeploymentConfig "django-hello-world-1" created
-    Service "django-hello-world-1" created
+    * A source build using source code from https://github.com/GrahamDumpleton/django-hello-world-v1.git will be created
+      * The resulting image will be pushed to image stream "django-hello-world-v1:latest"
+    * This image will be deployed in deployment config "django-hello-world-v1"
+    * Port 8080/tcp will be load balanced by service "django-hello-world-v1"
+--> Creating resources with label app=django-hello-world-v1 ...
+    ImageStream "django-hello-world-v1" created
+    BuildConfig "django-hello-world-v1" created
+    DeploymentConfig "django-hello-world-v1" created
+    Service "django-hello-world-v1" created
 --> Success
-    Build scheduled for "django-hello-world-1" - use the logs command to track its progress.
+    Build scheduled for "django-hello-world-v1" - use the logs command to track its progress.
     Run 'oc status' to view your app.
 ```
 
@@ -47,21 +47,21 @@ The only required argument we provide to ``oc new-app`` in this case is the Git 
 Initially the resulting web application is not publicly accessible, so once deployed we also need to expose it to the Internet.
 
 ```
-$ oc expose service django-hello-world-1
-route "django-hello-world-1" exposed
+$ oc expose service django-hello-world-v1
+route "django-hello-world-v1" exposed
 ```
 
 The default public hostname and URL assigned to the web application by OpenShift can be found via the web interface to OpenShift, or using the ``oc describe route`` command:
 
 ```
-$ oc describe route django-hello-world-1
-Name:			django-hello-world-1
+$ oc describe route django-hello-world-v1
+Name:			django-hello-world-v1
 Created:		15 minutes ago
-Labels:			app=django-hello-world-1
+Labels:			app=django-hello-world-v1
 Annotations:		openshift.io/host.generated=true
-Host:			django-hello-world-1-devconfcz-workshop.apps.example.com
+Host:			django-hello-world-v1-devconfcz-workshop.apps.example.com
 Path:			<none>
-Service:		django-hello-world-1
+Service:		django-hello-world-v1
 TLS Termination:	<none>
 Insecure Policy:	<none>
 ```
@@ -88,7 +88,7 @@ When automatic language detection is used and Python detected, it will use Pytho
 If you wished to use Python 2.7, you would need to have instead indicated that Python was to be used as well as what specific version of Python. This would have been done using the command:
 
 ```
-oc new-app python:2.7~https://github.com/GrahamDumpleton/django-hello-world-1.git
+oc new-app python:2.7~https://github.com/GrahamDumpleton/django-hello-world-v1.git
 ```
 
 
