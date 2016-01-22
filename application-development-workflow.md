@@ -193,10 +193,30 @@ sent 10156 bytes  received 246 bytes  2972.00 bytes/sec
 total size is 9476  speedup is 0.91
 ```
 
-Your mileage on this may vary as although it will synchronise files across, the ``rsync`` command does appear to give strange errors at times depending on what directories you are syncing and the permissions on those directories.
+You could even configure any editor you use to automatically trigger an ``oc rsync`` when writing files such that changes are automatically published. When doing this, because the pod name can change, you will want to use a script to first determine the pod name by selecting on the application name and then invoke ``oc rsync``.
+
+```
+#!/bin/sh
+
+APP=$1
+SRC=$2
+DST=$3
+
+POD=`oc get pods --selector app=$APP --output name | sed -e 's%pod/%%'`
+
+oc rsync $SRC $POD:$DST
+```
+
+This would then be run as:
+
+```
+sync-files django-hello-world-v2 hello_world /opt/app-root/src/hello_world
+```
+
+Do note that the target directory and files, whether manually editing them or using ``oc rsync``, must be writable to the user that the Docker container runs as.
 
 Either way, because the Django development server was being used, your Python web application will again be internally restarted when the changed code files are detected.
 
-Files can also be copied back out of a running Docker container using ``oc rsync`` if you had instead use ``oc rsh`` to enter into the Docker container to make changes and wish to save those changes.
+Files can also be copied back out of a running Docker container using ``oc rsync`` if you had instead used ``oc rsh`` to enter into the Docker container to make changes and wish to save those changes.
 
 Do remember that a running Docker container is ephemeral and the application code is not stored on a persistent disk volume. If making changes in the running Docker container itself and the container were shutdown and restarted, you will loose your changes.
