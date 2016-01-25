@@ -23,11 +23,12 @@ In this presentation you will be led through deployment of a simple Python web a
 
 The presentation will then cover various features of OpenShift and issues to consider when contemplating deployment of Python in a scalable way.
 
-The notes and instructions for each topic are:
+The notes and instructions for each part of the presentation are:
 
 * [Deploying a Python web application](deploying-a-python-web-application.md)
 * [Application development workflow](application-development-workflow.md)
 * [Selecting the Python web server](selecting-the-python-web-server.md)
+* [Configuration and application scaling](configuration-and-application-scaling.md)
 
 There is going to be more material here than can likely be covered in the presentation. That is intentional and is provided as a bit of homework you can work through later.
 

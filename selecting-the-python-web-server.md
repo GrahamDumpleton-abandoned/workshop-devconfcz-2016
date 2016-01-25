@@ -4,25 +4,48 @@ These notes talk about what the available Python web server options are when usi
 
 ## Default Python web server options
 
-S2I builders for OpenShift can be magic, but by being magic it means that they can also be quite opinionated. Where a particular programming language has a large range of options for hosting web applications, this can mean that limited options might be allowed for what web server you can run.
+S2I builders for OpenShift can be magic, but by being magic it means that they can also be quite opinionated. Where a particular programming language has a large range of options for hosting web applications, this can mean that limited options might be allowed for what web server you can easily run.
 
 For the case of the Python S2I builder, it steers you towards using the ``gunicorn`` WSGI server, that being the only one of the more popular Python WSGI servers that it has specific inbuilt support for.
 
 What dictates what Python web servers can be run and when, is the ``run`` script of the Python S2I builder. The checks it makes in order are as follows:
 
 1. If an ``app.py`` file exists for the application, it is assumed to provide the complete Python web application. It will be run as ``python app.py``.
-2. If the ``gunicorn`` module has been installed, a search is made for a ``wsgi.py`` file and if  found ``gunicorn`` will be run, using the ``wsgi.py`` file as a Python module containing the WSGI application entry point. The default ``gunicorn`` configuration of a single process and single threaded ``sync`` worker will be used.
+2. If the ``gunicorn`` module has been installed by being listed in the ``requirements.txt`` file, a search is made for a ``wsgi.py`` file and if  found ``gunicorn`` will be run, using the ``wsgi.py`` file as a Python module containing the WSGI application entry point. Alternatively, if there is a ``setup.py`` file, it will be used to determine the name of a module to serve as the WSGI application entrypoint. The default ``gunicorn`` configuration of a single process and single threaded ``sync`` worker will be used.
 3. If Django is installed and a ``manage.py`` file exists, the Django development server will be run for a Django based application.
 
 Unfortunately all three of these are not necessarily good defaults for various reasons.
 
-An ``app.py`` does allow you to run any Python web server, ASYNC or WSGI, so long as it can be imported as a module and run. The problem is that the Python S2I builder does not provide PID '1' zombie reaping protection built in. If a Python web server doesn't handle reaping of zombie processes, you can run into resource usage problems, or problems with process management.
+Important to highlight as well is that there is no default WSGI server included as part of the Python S2I builder. This means that if you were to give it a WSGI 'Hello World' application where the ``requirements.txt`` file didn't exist, it would fail to start up. Thus the most basic test case one might use to test OpenShift will fail.
+
+```
+$ oc new-app python:2.7~https://github.com GrahamDumpleton/wsgi-hello-world.git
+--> Found image 93d5039 (7 weeks old) in image stream "python in project openshift" under tag :2.7 for "python:2.7"
+    * A source build using source code from https://github.com/GrahamDumpleton/wsgi-hello-world.git will be created
+      * The resulting image will be pushed to image stream "wsgi-hello-world:latest"
+    * This image will be deployed in deployment config "wsgi-hello-world"
+    * Port 8080/tcp will be load balanced by service "wsgi-hello-world"
+--> Creating resources with label app=wsgi-hello-world ...
+    ImageStream "wsgi-hello-world" created
+    BuildConfig "wsgi-hello-world" created
+    DeploymentConfig "wsgi-hello-world" created
+    Service "wsgi-hello-world" created
+--> Success
+    Build scheduled for "wsgi-hello-world" - use the logs command to track its progress.
+    Run 'oc status' to view your app.
+    
+$ oc get pods
+NAME                       READY     STATUS             RESTARTS   AGE
+wsgi-hello-world-1-tppky   0/1       CrashLoopBackOff   2          30s
+```
+
+That a Python ``app.py`` script file is checked for does allow you to run any Python web server, ASYNC or WSGI, so long as it can be imported as a module and run. The problem is that the Python S2I builder does not provide PID '1' zombie reaping protection built in. If a Python web server doesn't handle reaping of zombie processes, you can run into resource usage problems, or problems with process management.
 
 For further information on the PID '1' zombie reaping problem you can check out:
 
 * [Issues with running as PID 1 in a Docker container](http://blog.dscpl.com.au/2015/12/issues-with-running-as-pid-1-in-docker.html) - http://blog.dscpl.com.au/2015/12/issues-with-running-as-pid-1-in-docker.html
 
-In the case of ``gunicorn``, because no true mutithreaded worker exists, to increase capacity you have to use more processes, or scale up the number of pods. This will result in more memory being used. For primarily I/O bound applications as most web applications generally are, being able to use some level of multithreading allows better use of memory resources. The ``eventlet`` and ``gevent`` workers are not suitable as a general purpose replacement for multithreading. The ``gunicorn`` WSGI server also lacks a way of directly hosting static files.
+In the case of ``gunicorn``, because no true mutithreaded worker exists, to increase capacity you have to use more processes, or scale up the number of pods. This will result in more memory resources being used. For primarily I/O bound applications as most web applications generally are, being able to use some level of multithreading allows better use of memory resources. The ``eventlet`` and ``gevent`` workers of ``gunicorn`` are not suitable as a general purpose replacement for multithreading. The ``gunicorn`` WSGI server also lacks a way of directly hosting static files.
 
 The fallback to using the Django development server if Django is being used is the most problematic. The Django development server is not suitable for production deployments. It can only handle one request at a time, does not handle the PID '1' zombie reaping problem, as well as having other potential performance issues with the way it handles static files and due to its code reloading mechanism.
 
@@ -30,132 +53,88 @@ One could technically run other command line Python web servers by implementing 
 
 ## Alternative Python S2I builders
 
-The OpenShift S2I Python builder will no doubt be improved over time, offering a more general purpose solution to support alternate production grade Python web servers, as well as built in protection for the PID '1' zombie reaping problem.
+The OpenShift S2I Python builder will hopefully be improved over time, offering a more general purpose solution to support alternate production grade Python web servers, as well as built in protection for the PID '1' zombie reaping problem.
 
 Even so, as the expertise as to what is the best way to setup a Docker container for hosting Python web applications, as well as knowledge of the best server options and configuration likely lies within the wider Python web community, it would be an ideal opportunity for the Python web community to come up with a best of bread S2I builder for Python themselves and drive its development.
 
-One such alternative S2I builder for Python which is available is ``grahamdumpleton/mod-wsgi-docker-s2i``.
+One such proof of concept implementation for an alternative S2I builder for Python which is available is based around the ``warpdrive`` project:
 
-* https://hub.docker.com/r/grahamdumpleton/mod-wsgi-docker-s2i/
+* https://github.com/GrahamDumpleton/warpdrive-python
 
-Although this has ``mod_wsgi`` listed in the name, it is actually a general purpose S2I builder for Python and allows the Python web server used to be overridden. Right now it serves as a proof of concept of what could be done and it is hoped that it could become the model for a community supported, general purpose, S2I builder for Python.
+This project provides scripts to assist in building up a Docker image containing a Python web application and then starting it up when the container is run. S2I ``assemble`` and ``run`` scripts are also provided which then allow a Docker base image for Python web applications to be S2I enabled using the ``warpdrive`` scripts.
 
-## Using mod_wsgi-express on OpenShift
+The two layers of the ``warpdrive`` scripts and the S2I scripts, means that the Docker base image for a Python web application can be used directly independent of S2I, or using S2I directly or in conjunction with OpenShift.
 
-To use the ``mod_wsgi`` based Python S2I builder with a Django application will require a couple of additions be made to the application code in the Git repository. This is necessary as it doesn't bake in certain behaviour as a default as the philosophy around the ``mod_wsgi`` S2I builder is that users should explicitly enable actions because they know they will need it and not rely on guesses by the S2I builder as to what needs to be done.
+Currently pre-built Docker base images using ``warpdrive`` are made available on Docker Hub as:
 
-The fact that the default Python S2I builder does do certain things as a default can instead causes unexpected problems that may be hard to debug when scaling up a Python web application. A user may not know that they should disable the default behaviour.
+* [grahamdumpleton/warp0-python27-debian8](https://hub.docker.com/r/grahamdumpleton/warp0-python27-debian8/)
+* [grahamdumpleton/warp0-python35-debian8](https://hub.docker.com/r/grahamdumpleton/warp0-python35-debian8/)
 
-An updated version of our sample Django 'Hello World' application designed to work with the ``mod_wsgi`` based Python S2I builder can be found in the Git repository:
-
-* [https://github.com/GrahamDumpleton/django-hello-world-v2](https://github.com/GrahamDumpleton/django-hello-world-v2)
-
-The ``mod_wsgi`` based Python S2I builder provides versions for:
-
-* Python 2.7
-* Python 3.3
-* Python 3.4
-* Python 3.5
-
-To deploy this version of our sample Django 'Hello World' application using Python 3.5, we use the ``oc new-app`` command:
+Image streams suitable for OpenShift can be created for these using the command:
 
 ```
-$ oc new-app grahamdumpleton/mod-wsgi-docker-s2i:python-3.5~https://github.com/GrahamDumpleton/django-hello-world-v2.git
---> Found Docker image b8dbbcb (2 weeks old) from Docker Hub for "grahamdumpleton/mod-wsgi-docker-s2i:python-3.5"
-    * An image stream will be created as "mod-wsgi-docker-s2i:python-3.5" that will track this image
-    * A source build using source code from https://github.com/GrahamDumpleton/django-hello-world-v2.git will be created
-      * The resulting image will be pushed to image stream "django-hello-world-v2:latest"
-      * Every time "mod-wsgi-docker-s2i:python-3.5" changes a new build will be triggered
-    * This image will be deployed in deployment config "django-hello-world-v2"
-    * Port 80/tcp will be load balanced by service "django-hello-world-v2"
---> Creating resources with label app=django-hello-world-v2 ...
-    ImageStream "mod-wsgi-docker-s2i" created
-    ImageStream "django-hello-world-v2" created
-    BuildConfig "django-hello-world-v2" created
-    DeploymentConfig "django-hello-world-v2" created
-    Service "django-hello-world-v2" created
+oc create -f https://raw.githubusercontent.com/GrahamDumpleton/warp0-python-debian8/master/openshift.json
+```
+
+The local image stream name and tags created for these will be:
+
+* warp0-python-debian8:2.7
+* warp0-python-debian8:3.5
+
+To use these S2I builders, search for ``warpdrive`` in the OpenShift UI when adding an application to a project. Then supply the URL for the Git repository for the Python web application.
+
+Alternatively, you can use the ``oc new-app`` command.
+
+Unlike the default Python S2I builder, these S2I builders come with the Apache HTTPD server and ``mod_wsgi-express`` already installed. This means that the most basic test case of a WSGI 'Hello World' application will work out of the box.
+
+```
+$ oc new-app warp0-python-debian8:2.7~https://github.com/GrahamDumpleton/wsgi-hello-world.git
+--> Found image f67ce21 (30 minutes old) in image stream "warp0-python-debian8" under tag :2.7 for "warp0-python-debian8:2.7"
+    * A source build using source code from https://github.com/GrahamDumpleton/wsgi-hello-world.git will be created
+      * The resulting image will be pushed to image stream "wsgi-hello-world:latest"
+    * This image will be deployed in deployment config "wsgi-hello-world"
+    * Port 8080/tcp will be load balanced by service "wsgi-hello-world"
+--> Creating resources with label app=wsgi-hello-world ...
+    ImageStream "wsgi-hello-world" created
+    BuildConfig "wsgi-hello-world" created
+    DeploymentConfig "wsgi-hello-world" created
+    Service "wsgi-hello-world" created
 --> Success
-    Build scheduled for "django-hello-world-v2" - use the logs command to track its progress.
+    Build scheduled for "wsgi-hello-world" - use the logs command to track its progress.
     Run 'oc status' to view your app.
+    
+$ oc get pods
+NAME                       READY     STATUS      RESTARTS   AGE
+wsgi-hello-world-1-t4wh0   1/1       Running     0          19s
+
+$ oc expose service wsgi-hello-world
+route "wsgi-hello-world" exposed
 ```
 
-We need to once again expose the application to make it publicly available.
+## Automatic versus explicit setup
 
-```
-$ oc expose service django-hello-world-v2
-route "django-hello-world-v2" exposed
-```
+If you are going to supply some sort of magic automatic option in a Python S2I builder for deploying a WSGI application without you needing to setup the WSGI server, then it has to work well. When making guesses you need to be pretty sure that you are correct. If you are going to dictate how the web application is started, then the web server you use needs to be something that is suitable for production use.
 
-## Specifying the WSGI application
+Even if you can make a pretty good system for automatically working out what needs to be done, there must be a simple way of disabling any automatic configuration and allowing a user to take full control.
 
-When using the ``mod_wsgi`` based Python S2I builder, you need to explicitly tell it what the WSGI application entry point is. There is no attempt to automatically try and work out what the WSGI application entry point is as this is a potentially error prone process and can lead to incorrect guesses.
+Even though a user taking over configuration is the preferred option so they understand what is being done, the ``warpdrive`` based Python S2I builder still provides an automatic option purely because people like to see things work magically out of the box. A PaaS provider also likes such an automatic mode as it gives the appearance that things are easy to deploy using their service.
 
-If you do not set up the WSGI application entry point, then ``mod_wsgi-express`` will display a default splash page. So you will know the WSGI server is at least working, but it will not be your WSGI application that is running.
+For the ``warpdrive`` based Python S2I builder the way that automatic deployment works is as follows:
 
-To specify the WSGI application entry point for ``mod_wsgi-express`` we need to supply additional options through the ``.whiskey/server_args`` file. By default ``mod_wsgi-express`` expects to be given the path for a WSGI script file. For our Django application, it is structured as a package, so we want to instead provide a module name for the WSGI application entry point. The options we add to the ``.whiskey/server_args`` file is therefore:
+1. If an ``app.sh`` file exists for the application, it will assume that this is a shell script which will take full control of starting up an appropriate web server for the Python web application. Configuration mode will be switched from ``auto`` to ``shell`` mode.
+2. If an ``app.py`` file exists for the application, it will assume that this is a Python script which will take full control of starting up an appropriate web server for the Python web application. Configuration mode will be switched from ``auto`` to ``python`` mode.
+3. If a ``paste.ini`` file exists for the application, it will assume that a Paste style configuration file defines the WSGI application. Configuration mode will be switched from ``auto`` to ``mod_wsgi`` and ``mod_wsgi-express`` given options to host the WSGI application described by the Paste configuration file.
+4. If a ``wsgi.py`` file exists for the application, it will assume this is a WSGI script file containing the WSGI application entry point. Configuration mode will be switched from ``auto`` to ``mod_wsgi`` and ``mod_wsgi-express`` given options to host the WSGI application in the WSGI script file. For compatibility with OpenShift 2, if the directory ``wsgi/static`` exists, it will also be served up as static files under the URL ``/static``.
+5. For compatibilty with OpenShift 2, if a ``wsgi/application`` file exists for the application, it will assume this is a WSGI script file containing the WSGI application entry point. Configuration mode will be switched from ``auto`` to ``mod_wsgi``  and ``mod_wsgi-express`` given options to host the WSGI application in the WSGI script file. Again for compatibility with OpenShift 2, if the directory ``wsgi/static`` exists, it will also be served up as static files under the URL ``/static``.
+6. If a ``setup.py`` file exists for the application, it will assume that was used to install an application module which should be used as the WSGI application. The name of the module is queried from ``setup.py``. Configuration mode will be switched from ``auto`` to ``mod_wsgi`` and ``mod_wsgi-express`` given options to host the WSGI application provide by the application module.
+7. If a ``manage.py`` file exists for the application, it will validate whether this is the Django management script. If it is, the details of the WSGI application entry point and location of static files will be queried using ``manage.py``. Configuration mode will be switched from ``auto`` to ``mod_wsgi`` and ``mod_wsgi-express`` given options to host the Django application including static files.
 
-```
---application-type module hello_world.wsgi
-```
+The automatic deployment mechanism therefore provides many more options than the default Python S2I builder. This includes being able to make use of the bundled WSGI server provided by ``mod_wsgi-express``. Compatibility is also provided for various legacy ways which a WSGI application could be setup under OpenShift 2, helping to make a transiton to OpenShift 3 easier.
 
-The option ``--application-type module`` indicated that a module name is being supplied. This is followed up by the module name. This corresponds to the file ``hello_world/wsgi.py``.
+If the automatic mechanism isn't sufficient, or a much greater level of configuration control is required, the automatic mechanism can be switched off and the specific type of server mechanism to be used specified.
 
-## Serving up of static file assets
+If this is required, the server type can be overridden within the application code by adding the file ``.warpdrive/server_type``. It can therefore explicitly be set to ``shell``, ``python``, ``paste`` or ``mod_wsgi``, but also ``gunicorn`` and ``waitress``. The structure of ``warpdrive`` is such that plugins for other WSGI servers could easily be added.
 
-Our Django application has various static file assets. In our 'Hello World' application this will only be what is required for the Django admin interface, but would grow when we start building out the application.
-
-When using the Django builtin development server, such static file assets are handled automatically. When using a separate WSGI server like ``mod_wsgi-express`` we need to configure the Django settings to indicate where static file assets should be placed and then collect them together when building our application for deployment.
-
-To indicate where the static file assets should be placed we add to the Django settings module at ``hello_world/settings.py`` the setting:
-
-```
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-```
-
-When deploying a Django application it is necessary to trigger the collection of static file assets from their various locations into this directory. This is done using the Django management command called ``collectstatic``. To have this be triggered as part of the build phase when the S2I builder is run we add an executable script file ``.whiskey/action_hooks/build`` and place in it:
-
-```
-#!/usr/bin/env bash
-
-set -x
-
-python manage.py collectstatic --noinput
-```
-
-This script is one of a number of hook scripts supported by the ``mod_wsgi`` based Python S2I builder. The hook scripts when supplied will be triggered appropriately during the build or deployment phases for the application, allowing an application to customise these steps. They mirror the hook scripts from OpenShift 2.
-
-Worth noting is that such hook scripts are not supported by the Python S2I builder of OpenShift 3, even though they were an important feature of OpenShift 2.
-
-Finally, we now need to tell ``mod_wsgi-express`` where the static file assets are located and under what URL they should be hosted. This is doing using the ``--url-alias`` option in the ``.whiskey/server_args`` file.
-
-```
---url-alias /static static
-```
-
-The URL path of ``/static`` needs to match what was used for the ``STATIC_URL`` setting in the Django settings module for the application.
-
-In supplying the ``--url-alias`` option, the Apache HTTPD web server started up by ``mod_wsgi-express`` will now host the static files directly. Using the Apache HTTPD web server, rather than relying on a WSGI middleware such as ``WhiteNoise`` will result in better performance.
-
-## Operating behind a proxy router
-
-OpenShift provides a platform for easily scaling up the number of instances of your web application. When this is done, OpenShift automatically handles the load balancing of requests across the multiple instance.
-
-In order to implement this, your web application will always be run behind a proxy router. By default for OpenShift this is ``haproxy``, although it is possible to substitute other routers such as a hardware based F5.
-
-Being behind a proxy router means that you do not see the exact HTTP request headers that the proxy router saw. Instead the request headers will reflect what is the internal address of your web application.
-
-This is important because it means that the details as to what your web application was accessed as, as passed through the WSGI request ``environ`` will be wrong. To accomodate this, it is necessary to consult special request headers added by the proxy router, which give details about the original host, port and scheme that the HTTP request was received on.
-
-To deal with this you would normally need to wrap your WSGI application with a special WSGI middleware that fixed up the WSGI ``environ`` for you. That is, it is not something that would be automatically done. In a PaaS environment it is too easy to forget to do this, plus any WSGI middlemare may not do it correctly.
-
-When using ``mod_wsgi-express`` you can avoid the need to do this yourself as ``mod_wsgi-express`` can do it for you.
-
-To enable this feature we will provide additional options to ``mod_wsgi-express``, telling it what are the trusted proxy headers set by the proxy router. These are added to the ``.whiskey/server_args`` file.
-
-```
---trust-proxy-header X-Forwarded-For --trust-proxy-header X-Forwarded-Port --trust-proxy-header X-Forwarded-Scheme
-```
-
-With this in place the WSGI request ``environ`` will now be corrected even before it is passed through to your WSGI application. Importantly, any equivalent request headers often used to indicate this information will be scrubbed from the WSGI request ``environ``. This is to ensure that a HTTP client cannot try and spoof the proxy information where a WSGI middleware was present that looked for more than one possible request header.
+In addition to all this, the ``warpdrive`` project provides PID '1' zombie reaping support itself in case a Python web application itself doesn't look after that. All the usual tricks required to have a Docker image run as an arbitrary user ID under OpenShift are also all incorporate into the Docker image.
 
 

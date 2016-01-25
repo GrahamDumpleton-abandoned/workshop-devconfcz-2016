@@ -50,7 +50,7 @@ pod "django-hello-world-v1-2-sct5r" deleted
 
 Then recreate the application using ``oc new-app`` and your fork of the Git repository.
 
-To re-point the already deployed application to your fork of the Git repository. You can do this using the ``oc edit`` command:
+To re-point the already deployed application to your fork of the Git repository, you can use the ``oc edit`` command:
 
 ```
 oc edit buildconfig django-hello-world-v1
@@ -115,7 +115,7 @@ The first such way to achieve this is to indicate to OpenShift when triggering a
 To do this, from within the top level directory of the checkout of your Git repository, run:
 
 ```
- oc start-build django-hello-world-v1 --from-dir .
+$ oc start-build django-hello-world-v1 --from-dir .
 Uploading "." at commit "HEAD" as binary input for the build ...
 Uploading directory "." as binary input for the build ...
 django-hello-world-v1-3
@@ -168,14 +168,14 @@ Although it seems to be a favourite of PaaS offerings to automatically use the D
 
 Also be aware that live source code changes will only work where some other action doesn't need to be taken, such as installing additional Python packages. Depending on the Docker base image being used and the application itself, you may or may not be able to install additional packages manually in the running Docker container.
 
-Finally, making live source code changes only make sense where you have a single instance of your web application running. This is because the application code is local to each Docker container. Where multiple instances are running, subsequent requests may not be handled by the Docker container where you made the live code changes.
+Finally, making live source code changes only makes sense where you have a single instance of your web application running. This is because the application code is local to each Docker container. Where multiple instances are running, subsequent requests may not be handled by the Docker container where you made the live code changes.
 
 ## Sycnhronising files with a pod
 
 A variation on making live coding changes is that rather than enter into the running Docker container, you make the changes in your local directory on your own system. You can then synchronise the files with a pod. This is done using ``oc rsync``:
 
 ```
-$ oc rsync ./hello_world django-hello-world-v1-4-0g090:/opt/app-root/src/hello_world
+$ oc rsync ./hello_world/ django-hello-world-v1-4-0g090:/opt/app-root/src/hello_world/
 building file list ... done
 hello_world/
 hello_world/__init__.py
@@ -210,12 +210,12 @@ oc rsync $SRC $POD:$DST
 This would then be run as:
 
 ```
-sync-files django-hello-world-v2 hello_world /opt/app-root/src/hello_world
+sync-files django-hello-world-v2 hello_world/ /opt/app-root/src/hello_world/
 ```
 
 Do note that the target directory and files, whether manually editing them or using ``oc rsync``, must be writable to the user that the Docker container runs as.
 
-Either way, because the Django development server was being used, your Python web application will again be internally restarted when the changed code files are detected.
+If you are able to update files inside of the container, because the Django development server was being used, your Python web application will again be internally restarted when the changed code files are detected.
 
 Files can also be copied back out of a running Docker container using ``oc rsync`` if you had instead used ``oc rsh`` to enter into the Docker container to make changes and wish to save those changes.
 
