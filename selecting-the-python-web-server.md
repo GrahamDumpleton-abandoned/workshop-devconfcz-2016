@@ -133,8 +133,6 @@ The automatic deployment mechanism therefore provides many more options than the
 
 If the automatic mechanism isn't sufficient, or a much greater level of configuration control is required, the automatic mechanism can be switched off and the specific type of server mechanism to be used specified.
 
-If this is required, the server type can be overridden within the application code by adding the file ``.warpdrive/server_type``. It can therefore explicitly be set to ``shell``, ``python``, ``paste`` or ``mod_wsgi``, but also ``gunicorn`` and ``waitress``. The structure of ``warpdrive`` is such that plugins for other WSGI servers could easily be added.
-
 In addition to all this, the ``warpdrive`` project provides PID '1' zombie reaping support itself in case a Python web application itself doesn't look after that. All the usual tricks required to have a Docker image run as an arbitrary user ID under OpenShift are also all incorporate into the Docker image.
 
 
