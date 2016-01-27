@@ -141,19 +141,19 @@ When your actual web application is deployed, such problems are avoided as the `
 
 When you use ``oc rsh`` and ``bash`` is run, the setup for ``nss_wrapper`` isn't however done, so you are faced with this problem.
 
-In order to get the same environment as what your deployed application will be using, so that manually run commands will work, or even to validate what environment the application is running with, you can use the command ``warpdrive-shell`` with ``oc rsh``:
+In order to get the same environment as what your deployed application will be using, so that manually run commands will work, or even to validate what environment the application is running with, you can use the command ``warpdrive shell`` with ``oc rsh``:
 
 ```
-$ oc rsh django-hello-world-v1-2-ek830 warpdrive-shell
+$ oc rsh django-hello-world-v1-2-ek830 warpdrive shell
 warpdrive@django-hello-world-v1-2-ek830:/app$
 ```
 
 Note that as well as setting up ``nss_wrapper``, this will also trigger any ``deploy-env`` action hook so that the shell has the same environment as the deployed application.
 
-If you didn't want an interactive shell, but just wanted to run a command inside of the container and know it used the same environment, then you can use ``oc exec`` and the ``warpdrive-exec`` command.
+If you didn't want an interactive shell, but just wanted to run a command inside of the container and know it used the same environment, then you can use ``oc exec`` and the ``warpdrive exec`` command.
 
 ```
-$ oc exec django-hello-world-v1-2-ek830 warpdrive-exec python manage.py migrate
+$ oc exec django-hello-world-v1-2-ek830 warpdrive exec python manage.py migrate
 Operations to perform:
   Apply all migrations: sessions, auth, contenttypes, admin
 Running migrations:
@@ -172,7 +172,7 @@ Running migrations:
   Applying sessions.0001_initial... OK
 ```
 
-The ``warpdrive-exec`` command would also be used if needing to run the same application image as a once off job to perform database migration during deployment.
+The ``warpdrive exec`` command would also be used if needing to run the same application image as a once off job to perform database migration during deployment.
 
 Use of a job like this as a separate phase is better than trying to implement database migration as a ``deploy`` action hook. In fact, a ``deploy`` hook should never be used for database migration as it will only cause problems, especially when a pod is scaled up.
 
