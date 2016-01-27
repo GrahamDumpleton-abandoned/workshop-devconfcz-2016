@@ -17,7 +17,7 @@ Direct links for these two labs are:
 
 You may wish to review at a later time other labs from the 'Getting Started with OpenShift' workshop as this presentation will not be going into depth on some of the topics already covered in that workshop.
 
-## Agenda for this presentation
+## Topics for this presentation
 
 In this presentation you will be led through deployment of a simple Python web application to give you a basic understanding of how Python and OpenShift work together.
 
@@ -29,6 +29,7 @@ The notes and instructions for each part of the presentation are:
 * [Application development workflow](application-development-workflow.md)
 * [Selecting the Python web server](selecting-the-python-web-server.md)
 * [Configuration and application scaling](configuration-and-application-scaling.md)
+* [Action hooks and executing commands](action-hooks-and-executing-commands.md)
 
 There is going to be more material here than can likely be covered in the presentation. That is intentional and is provided as a bit of homework you can work through later.
 
