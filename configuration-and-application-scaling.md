@@ -35,7 +35,7 @@ Example Git repositories with the server specific ``server_args`` file can be fo
 You can use ``oc new-app`` with any of these and the ``warpdrive`` based S2I Python builder. For example, if you wanted to evaluate the Waitress WSGI server use:
 
 ```
-oc new-app warp0-python-debian8:2.7~https://github.com/GrahamDumpleton/django-hello-world-v4
+oc new-app warp0-debian8-python:2.7~https://github.com/GrahamDumpleton/django-hello-world-v4
 ```
 
 ## Increasing application capacity 

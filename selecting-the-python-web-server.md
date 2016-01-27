@@ -71,19 +71,19 @@ The two layers of the ``warpdrive`` scripts and the S2I scripts, means that the 
 
 Currently pre-built Docker base images using ``warpdrive`` are made available on Docker Hub as:
 
-* [grahamdumpleton/warp0-python27-debian8](https://hub.docker.com/r/grahamdumpleton/warp0-python27-debian8/)
-* [grahamdumpleton/warp0-python35-debian8](https://hub.docker.com/r/grahamdumpleton/warp0-python35-debian8/)
+* [grahamdumpleton/warp0-debian8-python27](https://hub.docker.com/r/grahamdumpleton/warp0-debian8-python27/)
+* [grahamdumpleton/warp0-debian8-python35](https://hub.docker.com/r/grahamdumpleton/warp0-debian8-python35/)
 
 Image streams suitable for OpenShift can be created for these using the command:
 
 ```
-oc create -f https://raw.githubusercontent.com/GrahamDumpleton/warp0-python-debian8/master/openshift.json
+oc create -f https://raw.githubusercontent.com/GrahamDumpleton/warp0-debian8-python/master/openshift.json
 ```
 
 The local image stream name and tags created for these will be:
 
-* warp0-python-debian8:2.7
-* warp0-python-debian8:3.5
+* warp0-debian8-python:2.7
+* warp0-debian8-python:3.5
 
 To use these S2I builders, search for ``warpdrive`` in the OpenShift UI when adding an application to a project. Then supply the URL for the Git repository for the Python web application.
 
@@ -92,8 +92,8 @@ Alternatively, you can use the ``oc new-app`` command.
 Unlike the default Python S2I builder, these S2I builders come with the Apache HTTPD server and ``mod_wsgi-express`` already installed. This means that the most basic test case of a WSGI 'Hello World' application will work out of the box.
 
 ```
-$ oc new-app warp0-python-debian8:2.7~https://github.com/GrahamDumpleton/wsgi-hello-world.git
---> Found image f67ce21 (30 minutes old) in image stream "warp0-python-debian8" under tag :2.7 for "warp0-python-debian8:2.7"
+$ oc new-app warp0-debian8-python:2.7~https://github.com/GrahamDumpleton/wsgi-hello-world.git
+--> Found image f67ce21 (30 minutes old) in image stream "warp0-debian8-python" under tag :2.7 for "warp0-debian8-python:2.7"
     * A source build using source code from https://github.com/GrahamDumpleton/wsgi-hello-world.git will be created
       * The resulting image will be pushed to image stream "wsgi-hello-world:latest"
     * This image will be deployed in deployment config "wsgi-hello-world"

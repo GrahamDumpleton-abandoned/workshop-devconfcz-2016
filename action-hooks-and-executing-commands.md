@@ -46,7 +46,7 @@ To get around this you would need to create a custom S2I builder. Generally when
 For example, to create a S2I builder for running IPython notebooks the ``Dockerfile`` for the derived image would be:
 
 ```
-FROM grahamdumpleton/warp0-python27-debian8
+FROM grahamdumpleton/warp0-debian8-python27
 
 USER 0
 
