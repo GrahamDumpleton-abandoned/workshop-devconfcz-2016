@@ -1,6 +1,6 @@
 # Action hooks and executing commands
 
-These notes talk about how to perform additional actions when the Docker image for your application is being built and when it is being deployed.
+These notes talk about how to perform additional actions when the Docker image for your application is being built, deployed and when it is running.
 
 ## Application actions hooks
 
@@ -133,7 +133,7 @@ I have no name!@django-hello-world-v1-2-ek830:/app$
 
 Note how the prompt says '``I have no name!``'.
 
-This is due to the fact that OpenShift runs your container as a user ID which is neither root, nor the S2I builder user ID of ``1001`` used above. The unique user ID OpenShift assigns to your project is not reside in the system password database for the operating system within your Docker image.
+This is due to the fact that OpenShift runs your container as a user ID which is neither root, nor the S2I builder user ID of ``1001`` used above. The unique user ID OpenShift assigns to your project does not reside in the system password database for the operating system within your Docker image.
 
 This can cause problems for any application you run which doesn't handle gracefully that it is running as a user ID with no associated UNIX account.
 
