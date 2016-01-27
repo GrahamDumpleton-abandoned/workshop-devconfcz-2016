@@ -13,7 +13,7 @@ The server type can be explicitly set to:
 * ``paste`` - Will host the WSGI application described by the ``paste.ini`` file.
 * ``django`` - Will host the Django application managed by the ``manage.py`` file.
 
-In the cases of ``paste`` and ``django`` server type, ``mod_wsgi-express`` will be used with appropriate options automatically passed to it work.
+In the cases of ``paste`` and ``django`` server type, ``mod_wsgi-express`` will be used with appropriate options automatically passed to it to make it work.
 
 If you want to ignore the automatically generated configuration for ``paste`` and ``django`` and take full control of the setup of the WSGI server for these, or even have a custom WSGI application, you can set the server type to any of:
 
@@ -23,7 +23,7 @@ If you want to ignore the automatically generated configuration for ``paste`` an
 
 Any options that you then wish to use to configure a specific WSGI server, should then be added to the ``.warpdrive/server_args`` file.
 
-The structure of ``warpdrive`` is such that support for other WSGI servers could easily be added, alternatively you provide an ``app.sh`` file with launches any other WSGI server you want to use.
+The structure of ``warpdrive`` is such that support for other WSGI servers could easily be added, alternatively you provide an ``app.sh`` file with launches any other Python WSGI, ASYNC, general purpose web server, or even a custom application that you want to run.
 
 Example Git repositories with the server specific ``server_args`` file can be found at:
 
@@ -35,7 +35,7 @@ Example Git repositories with the server specific ``server_args`` file can be fo
 You can use ``oc new-app`` with any of these and the ``warpdrive`` based S2I Python builder. For example, if you wanted to evaluate the Waitress WSGI server use:
 
 ```
-oc new-app warp0-python-debian8:2.7~ https://github.com/GrahamDumpleton/django-hello-world-v4
+oc new-app warp0-python-debian8:2.7~https://github.com/GrahamDumpleton/django-hello-world-v4
 ```
 
 ## Increasing application capacity 
@@ -46,7 +46,7 @@ The default configuration is a single process with five threads. This may need t
 
 Ideally you should not have to change the code of the application and rebuild an image to adjust WSGI server configuration parameters such as this. These settings can therefore be adjusted using environment variables, meaning that only a redeployment of the existing image is needed.
 
-If you have a I/O bound application with many long running requests and need to increase the capacity for concurrent requests, you can simply change the environment variables for the deployment configuration, increasing both the number of processes and number of threads.
+If you have a I/O bound application with many long running requests and need to increase the capacity for concurrent requests, you can simply change the environment variables for the deployment configuration, increasing both the number of processes and number of threads as felt necessary.
 
 ```
 $ oc env deploymentconfig django-hello-world-v1 MOD_WSGI_PROCESSES=3 MOD_WSGI_THREADS=15
@@ -111,7 +111,7 @@ Remember to never use full application source code reloading on a production sys
 
 If using the ``django`` server type, although ``mod_wsgi-express`` is used, the primary configuration for Django is still automatically generated. If you had instead explicitly selected ``mod_wsgi``, you will need to provide all the configuration.
 
-To specify the WSGI application entry point for ``mod_wsgi-express`` we need to supply additional options through the ``.whiskey/server_args`` file. By default ``mod_wsgi-express`` expects to be given the path for a WSGI script file. For our Django application, it is structured as a package, so we want to instead provide a module name for the WSGI application entry point. The options we add to the ``.whiskey/server_args`` file is therefore:
+To specify the WSGI application entry point for ``mod_wsgi-express`` we need to supply additional options through the ``.warpdrive/server_args`` file. By default ``mod_wsgi-express`` expects to be given the path for a WSGI script file. For our Django application, it is structured as a package, so we want to instead provide a module name for the WSGI application entry point. The options we add to the ``.warpdrive/server_args`` file is therefore:
 
 ```
 --application-type module --entry-point hello_world.wsgi
@@ -133,7 +133,7 @@ This is the case even if relying on ``auto`` mode for ``server_type``.
 
 When deploying a Django application it is also necessary to trigger the collection of static file assets from their various locations into this directory. This is done using the Django management command called ``collectstatic``. If using ``auto`` or ``django`` this would be automatically done as part of the build of the Docker image. Because we have indicated that we want to configure everything ourselves with the ``mod_wsgi`` server type, we will need to handle this ourselves. We will get to how that is done later.
 
-Assuming our static files will be in the ``static`` directory, we can tell ``mod_wsgi-express`` where they are and under what URL they should be hosted by using the ``--url-alias`` option in the ``.whiskey/server_args`` file.
+Assuming our static files will be in the ``static`` directory, we can tell ``mod_wsgi-express`` where they are and under what URL they should be hosted by using the ``--url-alias`` option in the ``.warpdrive/server_args`` file.
 
 ```
 --url-alias /static/ static/
@@ -157,7 +157,7 @@ To deal with this you would normally need to wrap your WSGI application with a s
 
 When using ``mod_wsgi-express`` you can avoid the need to do this yourself as ``mod_wsgi-express`` can do it for you.
 
-To enable this feature we will provide additional options to ``mod_wsgi-express``, telling it what are the trusted proxy headers set by the proxy router. These are added to the ``.whiskey/server_args`` file.
+To enable this feature we will provide additional options to ``mod_wsgi-express``, telling it what are the trusted proxy headers set by the proxy router. These are added to the ``.warpdrive/server_args`` file.
 
 ```
 --trust-proxy-header X-Forwarded-For --trust-proxy-header X-Forwarded-Port --trust-proxy-header X-Forwarded-Scheme
