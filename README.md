@@ -8,7 +8,7 @@ The setup steps for installing the OpenShift CLI tools and logging into the Open
 
 * [http://training.runcloudrun.com/roadshow/](http://training.runcloudrun.com/roadshow/)
 
-You should complete complete at least Lab 1 and then follow instructions in the Lab 2 related to logging into the OpenShift command line interface and web interface.
+You should complete at least Lab 1 and then follow instructions in the Lab 2 related to logging into the OpenShift command line interface and web interface.
 
 Direct links for these two labs are:
 
@@ -21,7 +21,7 @@ You may wish to review at a later time other labs from the 'Getting Started with
 
 In this presentation you will be led through deployment of a simple Python web application to give you a basic understanding of how Python and OpenShift work together.
 
-The presentation will then cover various features of OpenShift and issues to consider when contemplating deployment of Python in a scalable way.
+The presentation will then cover various features of OpenShift and implementing a custom S2I builder for Python.
 
 The notes and instructions for each part of the presentation are:
 
@@ -31,7 +31,7 @@ The notes and instructions for each part of the presentation are:
 * [Configuration and application scaling](configuration-and-application-scaling.md)
 * [Action hooks and executing commands](action-hooks-and-executing-commands.md)
 
-There is going to be more material here than can likely be covered in the presentation. That is intentional and is provided as a bit of homework you can work through later.
+There is going to be more material here than can likely be covered in the presentation. That is in part intentional and is provided as a bit of homework you can work through later or refer to in the future.
 
 
 
