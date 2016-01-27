@@ -49,7 +49,7 @@ For further information on the PID '1' zombie reaping problem you can check out:
 
 * [Issues with running as PID 1 in a Docker container](http://blog.dscpl.com.au/2015/12/issues-with-running-as-pid-1-in-docker.html) - http://blog.dscpl.com.au/2015/12/issues-with-running-as-pid-1-in-docker.html
 
-In the case of ``gunicorn``, because no true mutithreaded worker exists, to increase capacity you have to use more processes, or scale up the number of pods. This will result in more memory resources being used. For primarily I/O bound applications as most web applications generally are, being able to use some level of multithreading allows better use of memory resources. The ``eventlet`` and ``gevent`` workers of ``gunicorn`` are not suitable as a general purpose replacement for multithreading. The ``gunicorn`` WSGI server also lacks a way of directly hosting static files.
+In the case of ``gunicorn``, because no true mutithreaded worker exists, to increase capacity you have to use more processes, or scale up the number of pods. This will result in more memory resources being used. For primarily I/O bound applications, as most database backed web applications generally are, being able to use some level of multithreading allows better use of memory resources. The ``eventlet`` and ``gevent`` workers of ``gunicorn`` are not suitable as a general purpose replacement for multithreading. The ``gunicorn`` WSGI server also lacks a way of directly hosting static files.
 
 The fallback to using the Django development server if Django is being used is the most problematic. The Django development server is not suitable for production deployments. It can only handle one request at a time, does not handle the PID '1' zombie reaping problem, as well as having other potential performance issues with the way it handles static files and due to its code reloading mechanism.
 
@@ -137,6 +137,6 @@ The automatic deployment mechanism therefore provides many more options than the
 
 If the automatic mechanism isn't sufficient, or a much greater level of configuration control is required, the automatic mechanism can be switched off and the specific type of server mechanism to be used specified.
 
-In addition to all this, the ``warpdrive`` project provides PID '1' zombie reaping support itself in case a Python web application itself doesn't look after that. All the usual tricks required to have a Docker image run as an arbitrary user ID under OpenShift are also all incorporate into the Docker image.
+In addition to all this, the ``warpdrive`` project provides PID '1' zombie reaping support itself in case a Python web application itself doesn't look after that. All the usual tricks required to have a Docker image run as an arbitrary user ID under OpenShift are also all incorporated into the Docker image.
 
 
