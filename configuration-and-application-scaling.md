@@ -139,7 +139,7 @@ Assuming our static files will be in the ``static`` directory, we can tell ``mod
 --url-alias /static/ static/
 ```
 
-The URL path of ``/static`` needs to match what was used for the ``STATIC_URL`` setting in the Django settings module for the application.
+The URL path of ``/static/`` needs to match what was used for the ``STATIC_URL`` setting in the Django settings module for the application.
 
 In supplying the ``--url-alias`` option, the Apache HTTPD web server started up by ``mod_wsgi-express`` will now host the static files directly. Using the Apache HTTPD web server, rather than relying on a WSGI middleware such as ``WhiteNoise`` will result in better performance. If using ``gunicorn`` or ``waitress`` you would need to install and use WhiteNoise.
 
@@ -151,7 +151,7 @@ In order to implement this, your web application will always be run behind a pro
 
 Being behind a proxy router means that you do not see the exact HTTP request headers that the proxy router saw. Instead the request headers will reflect what is the internal address of your web application.
 
-This is important because it means that the details as to what your web application was accessed as,whenas passed through to the WSGI request ``environ`` will be wrong. To accomodate this, it is necessary to consult special request headers added by the proxy router, which give details about the original host, port and scheme that the HTTP request was received on.
+This is important because it means that the details as to what your web application was accessed as, when passed through to the WSGI request ``environ`` will be wrong. To accomodate this, it is necessary to consult special request headers added by the proxy router, which give details about the original host, port and scheme that the HTTP request was received on.
 
 To deal with this you would normally need to wrap your WSGI application with a special WSGI middleware that fixed up the WSGI ``environ`` for you. That is, it is not something that would be automatically done. In a PaaS environment it is too easy to forget to do this, plus any WSGI middlemare may not do it correctly.
 
@@ -167,4 +167,4 @@ With this in place the WSGI request ``environ`` will now be corrected even befor
 
 Adding these proxy header options would also be required if relying on ``auto`` or using ``django`` with a Django application. Because ``mod_wsgi-express`` is still be used, they can be placed in the ``.warpdrive/server_args`` file in the same way.
 
-If using ``gunicorn`` or ``waitress``, you likely will need to use a WSGI middleware to perform the fixups. Both of these WSGI servers do appear to have some options related to fixups for proxy headers, but it is unclear whether they do everything required and whether deal properly with attempts to spoof related proxy headers by a HTTP client.
+If using ``gunicorn`` or ``waitress``, you likely will need to use a WSGI middleware to perform the fixups. Both of these WSGI servers do appear to have some options related to fixups for proxy headers, but it is unclear whether they do everything required and whether they deal properly with attempts to spoof related proxy headers by a HTTP client.
