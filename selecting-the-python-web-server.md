@@ -8,7 +8,11 @@ S2I builders for OpenShift can be magic, but by being magic it means that they c
 
 For the case of the Python S2I builder, it steers you towards using the ``gunicorn`` WSGI server, that being the only one of the more popular Python WSGI servers that it has specific inbuilt support for.
 
-What dictates what Python web servers can be run and when, is the ``run`` script of the Python S2I builder. The checks it makes in order are as follows:
+What dictates what Python web servers can be run and when, is the ``run`` script of the Python S2I builder. You can see that for the default Python S2I builder at:
+
+* https://github.com/openshift/sti-python/blob/master/2.7/s2i/bin/run
+
+The checks it makes in order are as follows:
 
 1. If an ``app.py`` file exists for the application, it is assumed to provide the complete Python web application. It will be run as ``python app.py``.
 2. If the ``gunicorn`` module has been installed by being listed in the ``requirements.txt`` file, a search is made for a ``wsgi.py`` file and if  found ``gunicorn`` will be run, using the ``wsgi.py`` file as a Python module containing the WSGI application entry point. Alternatively, if there is a ``setup.py`` file, it will be used to determine the name of a module to serve as the WSGI application entrypoint. The default ``gunicorn`` configuration of a single process and single threaded ``sync`` worker will be used.
