@@ -20,8 +20,11 @@ If you want to ignore the automatically generated configuration for ``paste`` an
 * ``gunicorn``
 * ``mod_wsgi``
 * ``waitress``
+* ``uwsgi``
 
-Any options that you then wish to use to configure a specific WSGI server, should then be added to the ``.warpdrive/server_args`` file.
+The startup script in ``warpdrive`` will start the selected WSGI server up for you, ensuring that the minimal options are set which will allow it to run inside of the container properly, and listening on the correct port for HTTP requests.
+
+Any options that you then wish to use to further configure the selected WSGI server, would  be added to the ``.warpdrive/server_args`` file.
 
 The structure of ``warpdrive`` is such that support for other WSGI servers could easily be added, alternatively you provide an ``app.sh`` file with launches any other Python WSGI, ASYNC, general purpose web server, or even a custom application that you want to run.
 
@@ -31,6 +34,7 @@ Example Git repositories with the server specific ``server_args`` file can be fo
 * [django-hello-world-v3](https://github.com/GrahamDumpleton/django-hello-world-v3) - server_type = gunicorn
 * [django-hello-world-v4](https://github.com/GrahamDumpleton/django-hello-world-v4) - server_type = waitress
 * [django-hello-world-v5](https://github.com/GrahamDumpleton/django-hello-world-v5) - server_type = mod_wsgi
+* [django-hello-world-v6](https://github.com/GrahamDumpleton/django-hello-world-v6) - server_type = uwsgi
 
 You can use ``oc new-app`` with any of these and the ``warpdrive`` based S2I Python builder. For example, if you wanted to evaluate the Waitress WSGI server use:
 
