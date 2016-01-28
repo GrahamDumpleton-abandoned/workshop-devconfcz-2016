@@ -115,6 +115,28 @@ $ oc expose service wsgi-hello-world
 route "wsgi-hello-world" exposed
 ```
 
+Our Django example will also work fine as well, again using ``mod_wsgi-express`` where as with the default Python S2I builder it was using the Django development server.
+
+```
+$ oc new-app warp0-debian8-python:2.7~https://github.com/GrahamDumpleton/django-hello-world-v1
+--> Found image ac4701a (About an hour old) in image stream "warp0-debian8-python" under tag :2.7 for "warp0-debian8-python:2.7"
+    * A source build using source code from https://github.com/GrahamDumpleton/django-hello-world-v1 will be created
+      * The resulting image will be pushed to image stream "django-hello-world-v1:latest"
+    * This image will be deployed in deployment config "django-hello-world-v1"
+    * Port 8080/tcp will be load balanced by service "django-hello-world-v1"
+--> Creating resources with label app=django-hello-world-v1 ...
+    ImageStream "django-hello-world-v1" created
+    BuildConfig "django-hello-world-v1" created
+    DeploymentConfig "django-hello-world-v1" created
+    Service "django-hello-world-v1" created
+--> Success
+    Build scheduled for "django-hello-world-v1" - use the logs command to track its progress.
+    Run 'oc status' to view your app.
+    
+$ oc expose service django-hello-world-v1
+route "django-hello-world-v1" exposed
+```
+
 ## Automatic versus explicit setup
 
 If you are going to supply some sort of magic automatic option in a Python S2I builder for deploying a WSGI application without you needing to setup the WSGI server, then it has to work well. When making guesses you need to be pretty sure that you are correct. If you are going to dictate how the web application is started, then the web server you use needs to be something that is suitable for production use.
