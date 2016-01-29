@@ -127,15 +127,15 @@ The option ``--application-type module`` indicated that a module name is being s
 
 Our Django application has various static file assets. In our Django 'Hello World' application this will only be what is required for the Django admin interface, but would grow when we start building out the application.
 
-To indicate where the static file assets should be placed we would already have needed to add to the Django settings module at ``hello_world/settings.py`` the setting:
+To indicate where the static file assets should be placed you need to ensure you have added to the Django settings module at ``hello_world/settings.py`` the setting:
 
 ```
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 ```
 
-This is the case even if relying on ``auto`` mode for ``server_type``.
+When deploying a Django application it is also necessary to trigger the collection of static file assets from their various locations into this directory. This is done using the Django management command called ``collectstatic``.
 
-When deploying a Django application it is also necessary to trigger the collection of static file assets from their various locations into this directory. This is done using the Django management command called ``collectstatic``. If using ``auto`` or ``django`` this would be automatically done as part of the build of the Docker image. Because we have indicated that we want to configure everything ourselves with the ``mod_wsgi`` server type, we will need to handle this ourselves. We will get to how that is done later.
+If using ``auto`` or ``django`` this would be automatically done as part of the build of the Docker image, as would setting ``STATIC_ROOT`` if it hadn't already been specified. Because though we have indicated that we want to configure everything ourselves with the ``mod_wsgi`` server type, we will need to handle all this ourselves. We will get to how ``collectstatic`` is triggered later.
 
 Assuming our static files will be in the ``static`` directory, we can tell ``mod_wsgi-express`` where they are and under what URL they should be hosted by using the ``--url-alias`` option in the ``.warpdrive/server_args`` file.
 
