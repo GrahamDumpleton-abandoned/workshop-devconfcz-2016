@@ -164,13 +164,13 @@ Make your code changes and the Python web application will perform an internal r
 
 Note that this only works because for our Django application, the default OpenShift Python S2I builder has decided to run the builtin Django development server.
 
-Although it seems to be a favourite of PaaS offerings to automatically use the Django development server to make it appear that installation is really simple, it is never recommended that the Django development server be used in production. It is arguable that even having support for the Django development server as a default is a very bad idea and the option should be removed.
+Although it seems to be a favourite of PaaS offerings to automatically use the Django development server to make it appear that installation is really simple, it is never recommended that the Django development server be used in production.
 
 Also be aware that live source code changes will only work where some other action doesn't need to be taken, such as installing additional Python packages. Depending on the Docker base image being used and the application itself, you may or may not be able to install additional packages manually in the running Docker container.
 
 Finally, making live source code changes only makes sense where you have a single instance of your web application running. This is because the application code is local to each Docker container. Where multiple instances are running, subsequent requests may not be handled by the Docker container where you made the live code changes.
 
-## Sycnhronising files with a pod
+## Synchronising files with a pod
 
 A variation on making live coding changes is that rather than enter into the running Docker container, you make the changes in your local directory on your own system. You can then synchronise the files with a pod. This is done using ``oc rsync``:
 

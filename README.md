@@ -15,7 +15,7 @@ Direct links for these two labs are:
 * [Lab 1: Installing the OpenShift CLI](http://training.runcloudrun.com/roadshow/01-install.md.html) - http://training.runcloudrun.com/roadshow/01-install.md.html
 * [Lab 2: Smoke Test and Quick Tour](http://training.runcloudrun.com/roadshow/02-smoketest.md.html) - http://training.runcloudrun.com/roadshow/02-smoketest.md.html
 
-You may wish to review at a later time other labs from the 'Getting Started with OpenShift' workshop as this presentation will not be going into depth on some of the topics already covered in that workshop.
+You may wish to review at a later time other labs from the 'Getting Started with OpenShift' workshop as this presentation will not be going into depth on topics already covered in that workshop.
 
 When ready, create a new project under your OpenShift account into which to create any applicatons described in these notes. Create the project as:
 

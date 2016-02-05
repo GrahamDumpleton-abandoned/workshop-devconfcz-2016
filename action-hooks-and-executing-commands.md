@@ -4,7 +4,7 @@ These notes talk about how to perform additional actions when the Docker image f
 
 ## Application actions hooks
 
-The ``assemble`` and ``run`` scripts of the Python S2I builder, used during the image build and deployment phases, are self contained and offer no way for a user to specify additional actions to be performed. This is extremely limiting as it means that if the S2I builder doesn't do something automatically for you, then you are stuck and wouldn't be able to use it.
+The ``assemble`` and ``run`` scripts of the default Python S2I builder, used during the image build and deployment phases, are self contained and offer no way for a user to specify additional actions to be performed. This is extremely limiting as it means that if the S2I builder doesn't do something automatically for you, then you are stuck and wouldn't be able to use it.
 
 As an example, when building an image for a Django application it is necessary to trigger the collection of static file assets from their various locations and place them into a single directory so they can be served by a web server. This is done using the Django management command called ``collectstatic``.
 
@@ -96,7 +96,7 @@ $ oc expose service nbviewer1
 route "nbviewer1" exposed
 ```
 
-Alternatively, it is used as an S2I builder to create an instance which incorporates IPython notebooks from a Git repository. That same Git repository can even have a ``requirements.txt`` file with additional Python packages to be installed which are required by the IPython notebooks.
+Alternatively, it can be used as an S2I builder to create an instance which incorporates IPython notebooks from a Git repository. That same Git repository can even have a ``requirements.txt`` file with additional Python packages to be installed which are required by the IPython notebooks.
 
 ```
 $ oc new-app grahamdumpleton/s2i-ipython-notebook:python-2.7~https://github.com/jrjohansson/scientific-python-lectures.git --name nbviewer2

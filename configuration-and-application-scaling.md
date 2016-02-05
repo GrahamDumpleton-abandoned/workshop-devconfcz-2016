@@ -169,6 +169,6 @@ To enable this feature we will provide additional options to ``mod_wsgi-express`
 
 With this in place the WSGI request ``environ`` will now be corrected even before it is passed through to your WSGI application. Importantly, any equivalent request headers often used to indicate this information will be scrubbed from the WSGI request ``environ``. This is to ensure that a HTTP client cannot try and spoof the proxy information where a WSGI middleware was present that looked for more than one possible request header.
 
-Adding these proxy header options would also be required if relying on ``auto`` or using ``django`` with a Django application. Because ``mod_wsgi-express`` is still be used, they can be placed in the ``.warpdrive/server_args`` file in the same way.
+Adding these proxy header options would also be required if relying on ``auto`` or using ``django`` with a Django application. Because ``mod_wsgi-express`` is still being used, they can be placed in the ``.warpdrive/server_args`` file in the same way.
 
 If using ``gunicorn`` or ``waitress``, you likely will need to use a WSGI middleware to perform the fixups. Both of these WSGI servers do appear to have some options related to fixups for proxy headers, but it is unclear whether they do everything required and whether they deal properly with attempts to spoof related proxy headers by a HTTP client.

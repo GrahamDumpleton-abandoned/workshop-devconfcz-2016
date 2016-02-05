@@ -6,7 +6,7 @@ These notes talk about what the available Python web server options are when usi
 
 S2I builders for OpenShift can be magic, but by being magic it means that they can also be quite opinionated. Where a particular programming language has a large range of options for hosting web applications, this can mean that limited options might be allowed for what web server you can easily run.
 
-For the case of the Python S2I builder, it steers you towards using the ``gunicorn`` WSGI server, that being the only one of the more popular Python WSGI servers that it has specific inbuilt support for.
+For the case of the Python S2I builder, it currently steers you towards using the ``gunicorn`` WSGI server, that being the only one of the more popular Python WSGI servers that it has specific inbuilt support for.
 
 What dictates what Python web servers can be run and when, is the ``run`` script of the Python S2I builder. You can see that for the default Python S2I builder at:
 
