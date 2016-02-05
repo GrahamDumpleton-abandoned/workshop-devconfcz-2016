@@ -33,6 +33,17 @@ The notes and instructions for each part of the presentation are:
 
 There is going to be more material here than can likely be covered in the presentation. That is in part intentional and is provided as a bit of homework you can work through later or refer to in the future.
 
+## Trying it out all at home
+
+If you don't wish to follow along and try the examples during the presentation, want to try it out later, but don't already have access to an OpenShift instance, you can use the All-In-One Virtual Machine for OpenShift.
+
+* https://www.openshift.org/vm/
+
+Alternatively, you can use Amazon Test Drive for OpenShift.
+
+* https://aws.amazon.com/testdrive/redhat/
+
+
 
 
 
