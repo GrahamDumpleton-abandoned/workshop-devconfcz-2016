@@ -17,6 +17,14 @@ Direct links for these two labs are:
 
 You may wish to review at a later time other labs from the 'Getting Started with OpenShift' workshop as this presentation will not be going into depth on some of the topics already covered in that workshop.
 
+When ready, create a new project under your OpenShift account into which to create any applicatons described in these notes. Create the project as:
+
+```
+oc new-project userXX-python
+```
+
+Replace ``XX`` with the user number corresponding to the account you are using.
+
 ## Topics for this presentation
 
 In this presentation you will be led through deployment of a simple Python web application to give you a basic understanding of how Python and OpenShift work together.
