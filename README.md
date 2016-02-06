@@ -59,6 +59,10 @@ If you don't wish to follow along and try the examples during the presentation, 
 
 * https://www.openshift.org/vm/
 
+A blog post on setting up and using the All-In-One VM can be found at:
+
+* https://blog.openshift.com/using-openshift-3-on-your-local-environment/
+
 Alternatively, you can use Amazon Test Drive for OpenShift.
 
 * https://aws.amazon.com/testdrive/redhat/
