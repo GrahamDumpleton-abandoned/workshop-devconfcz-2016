@@ -2,8 +2,6 @@
 
 ## http://tinyurl.com/python-on-openshift
 
-DEVCONF.cz 2016 - Saturday, February 6 / 10:40 - 11:20
-
 This presentation will be in the form of a mini workshop where you will be led through performing various tasks with OpenShift related to Python web applications. If you have not participated in the prior '[Getting Started with OpenShift](https://devconfcz2016.sched.org/event/5ns0/getting-started-with-openshift)' workshop but wish to follow along, you will need to install the OpenShift CLI tools.
 
 The setup steps for installing the OpenShift CLI tools and logging into the OpenShift environment can be found in our OpenShift Roadshow workshop notes. These can be found at:
@@ -21,9 +19,13 @@ If the links for the OpenShift CLI tools don't work, grab down latest ``openshif
 
 * https://github.com/openshift/origin/releases
 
+The ``oc version`` command should yield ``oc v1.1.1`` or later 
+
 The URL for the OpenShift cluster will be:
 
 * https://openshift-master.devconf.openshift3roadshow.com
+
+The password for your assigned user account will be ``devconf``.
 
 You may wish to review at a later time other labs from the 'Getting Started with OpenShift' workshop as this presentation will not be going into depth on topics already covered in that workshop.
 
